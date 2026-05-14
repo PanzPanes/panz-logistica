@@ -1,0 +1,17 @@
+{
+  "name": "Panz Logística",
+  "short_name": "Panz",
+  "description": "Sistema de reparto para Panificadora Panz",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#D85A30",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
