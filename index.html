@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Panz Logística</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#D85A30">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Panz">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="logo">Panz <span>Logística</span></div>
+      <div class="modo-badge exp" id="modo-btn" onclick="toggleModo()">
+        <i class="ti ti-building-warehouse"></i> Expedición
+      </div>
+    </div>
+
+    <!-- SCREEN EXPEDICIÓN -->
+    <div class="screen active" id="screen-exp">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('exp',0)"><i class="ti ti-calendar-today"></i> Hoy</div>
+        <div class="tab" onclick="showTab('exp',1)"><i class="ti ti-map-pin"></i> Locales</div>
+        <div class="tab" onclick="showTab('exp',2)"><i class="ti ti-box"></i> Cajones</div>
+        <div class="tab" onclick="showTab('exp',3)"><i class="ti ti-chart-bar"></i> Métricas</div>
+      </div>
+
+      <!-- TAB HOY -->
+      <div class="content" id="exp-tab-0">
+        <div id="exp-alertas"></div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="stat-label">Cajones hoy</div>
+            <div class="stat-value" id="st-caj">0</div>
+            <div class="stat-sub">máx 110 por vuelta</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Locales tileados</div>
+            <div class="stat-value" id="st-loc">0</div>
+            <div class="stat-sub" id="st-vueltas">—</div>
+          </div>
+        </div>
+        <div id="vueltas-exp"></div>
+        <div class="divider"></div>
+        <div class="section-title">Tildar locales con pedido listo</div>
+        <div id="lista-dia"></div>
+        <button class="btn-p btn-full" onclick="generarVueltas()">
+          <i class="ti ti-route"></i> Generar vueltas
+        </button>
+      </div>
+
+      <!-- TAB LOCALES -->
+      <div class="content" id="exp-tab-1" style="display:none">
+        <button class="btn-p btn-full" onclick="abrirModalLocal()">
+          <i class="ti ti-plus"></i> Nuevo local
+        </button>
+        <div id="lista-locales"></div>
+      </div>
+
+      <!-- TAB CAJONES -->
+      <div class="content" id="exp-tab-2" style="display:none">
+        <div class="section-title">Tipos de cajón activos</div>
+        <p class="helper-text">Estos tipos aparecen al cargar pedidos y registrar entregas.</p>
+        <button class="btn-p btn-full" onclick="abrirModalProducto()">
+          <i class="ti ti-plus"></i> Nuevo tipo de cajón
+        </button>
+        <div id="lista-productos"></div>
+      </div>
+
+      <!-- TAB MÉTRICAS -->
+      <div class="content" id="exp-tab-3" style="display:none">
+        <div class="section-title">Balance del día</div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-arrow-down-circle"></i> Entregados</div>
+            <div class="stat-value" id="m-ent">0</div>
+            <div class="stat-sub">cajones</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-arrow-up-circle"></i> Recuperados</div>
+            <div class="stat-value" id="m-rec">0</div>
+            <div class="stat-sub">cajones</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="stat-label">Tiempo estimado</div>
+            <div class="stat-value" id="m-test">—</div>
+            <div class="stat-sub">minutos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Tiempo real</div>
+            <div class="stat-value" id="m-treal">—</div>
+            <div class="stat-sub" id="m-efic"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-title">Cajones adeudados por local</div>
+        <div id="m-deudas"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN REPARTIDOR -->
+    <div class="screen" id="screen-rep">
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('rep',0)"><i class="ti ti-truck"></i> Mi ruta</div>
+        <div class="tab" onclick="showTab('rep',1)"><i class="ti ti-flag"></i> Cerrar vuelta</div>
+      </div>
+      <div class="content" id="rep-tab-0">
+        <div id="rep-hdr"></div>
+        <div id="rep-prog"></div>
+        <div id="rep-paradas"></div>
+      </div>
+      <div class="content" id="rep-tab-1" style="display:none">
+        <div class="section-title">Registrar llegada a fábrica</div>
+        <label class="form-label">Hora de regreso</label>
+        <input type="time" id="hora-llegada" value="13:30">
+        <button class="btn-v btn-full" style="margin-top:4px" onclick="cerrarVuelta()">
+          <i class="ti ti-check"></i> Confirmar llegada
+        </button>
+        <div id="cierre-resultado"></div>
+      </div>
+    </div>
+
+    <!-- MODAL LOCAL -->
+    <div class="modal-overlay" id="modal-local">
+      <div class="modal">
+        <div class="modal-title" id="ml-title">Nuevo local</div>
+        <input type="hidden" id="ml-id">
+        <label class="form-label">Nombre</label>
+        <input type="text" id="ml-nombre" placeholder="Ej: Almacén Don Pedro">
+        <label class="form-label">Dirección completa</label>
+        <input type="text" id="ml-dir" placeholder="Ej: Av. Colón 1234, Córdoba">
+        <label class="form-label">Teléfono</label>
+        <input type="tel" id="ml-tel" placeholder="Ej: 351-4523890">
+        <div class="form-row">
+          <div>
+            <label class="form-label">Abre</label>
+            <input type="time" id="ml-abre" value="08:00">
+          </div>
+          <div>
+            <label class="form-label">Cierra</label>
+            <input type="time" id="ml-cierra" value="14:00">
+          </div>
+        </div>
+        <label class="form-label">Cajones adeudados actuales</label>
+        <input type="number" id="ml-deuda" value="0" min="0">
+        <div class="modal-actions">
+          <button onclick="cerrarModal('local')">Cancelar</button>
+          <button class="btn-p" onclick="guardarLocal()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL PRODUCTO -->
+    <div class="modal-overlay" id="modal-producto">
+      <div class="modal">
+        <div class="modal-title" id="mp-title">Nuevo tipo de cajón</div>
+        <input type="hidden" id="mp-id">
+        <label class="form-label">Nombre del tipo</label>
+        <input type="text" id="mp-nombre" placeholder="Ej: Lactal, Baguette, Medialuna...">
+        <label class="form-label">Color identificador</label>
+        <div id="color-picker" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"></div>
+        <input type="hidden" id="mp-color" value="#D85A30">
+        <div class="modal-actions">
+          <button onclick="cerrarModal('producto')">Cancelar</button>
+          <button class="btn-p" onclick="guardarProducto()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL ENTREGA -->
+    <div class="modal-overlay" id="modal-entrega">
+      <div class="modal">
+        <div class="modal-title" id="me-title">Registrar entrega</div>
+        <input type="hidden" id="me-id">
+        <div class="section-title">Cajones entregados</div>
+        <div id="me-entregados" class="caja-grid"></div>
+        <div class="divider"></div>
+        <div class="section-title">Cajones recuperados</div>
+        <div id="me-recuperados" class="caja-grid"></div>
+        <div class="modal-actions">
+          <button onclick="cerrarModal('entrega')">Cancelar</button>
+          <button class="btn-v" onclick="confirmarEntrega()"><i class="ti ti-check"></i> Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="saving" id="saving-toast"><i class="ti ti-device-floppy"></i> Guardado</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
