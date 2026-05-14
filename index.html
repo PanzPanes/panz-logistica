@@ -7,15 +7,36 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D85A30">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Panz">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="style.css">
+  <style>
+    #loading {
+      position: fixed; inset: 0; background: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 999; gap: 16px;
+    }
+    #loading .logo-big { font-size: 36px; font-weight: 700; color: #D85A30; letter-spacing: .05em; }
+    #loading .spinner {
+      width: 36px; height: 36px; border: 3px solid #FAECE7;
+      border-top-color: #D85A30; border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    #loading p { font-size: 14px; color: #999; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
+
+  <div id="loading">
+    <div class="logo-big">Panz</div>
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
   <div id="app">
 
-    <!-- TOPBAR -->
     <div class="topbar">
       <div class="logo">Panz <span>Logística</span></div>
       <div class="modo-badge exp" id="modo-btn" onclick="toggleModo()">
@@ -32,7 +53,6 @@
         <div class="tab" onclick="showTab('exp',3)"><i class="ti ti-chart-bar"></i> Métricas</div>
       </div>
 
-      <!-- TAB HOY -->
       <div class="content" id="exp-tab-0">
         <div id="exp-alertas"></div>
         <div class="stat-row">
@@ -56,7 +76,6 @@
         </button>
       </div>
 
-      <!-- TAB LOCALES -->
       <div class="content" id="exp-tab-1" style="display:none">
         <button class="btn-p btn-full" onclick="abrirModalLocal()">
           <i class="ti ti-plus"></i> Nuevo local
@@ -64,7 +83,6 @@
         <div id="lista-locales"></div>
       </div>
 
-      <!-- TAB CAJONES -->
       <div class="content" id="exp-tab-2" style="display:none">
         <div class="section-title">Tipos de cajón activos</div>
         <p class="helper-text">Estos tipos aparecen al cargar pedidos y registrar entregas.</p>
@@ -74,7 +92,6 @@
         <div id="lista-productos"></div>
       </div>
 
-      <!-- TAB MÉTRICAS -->
       <div class="content" id="exp-tab-3" style="display:none">
         <div class="section-title">Balance del día</div>
         <div class="stat-row">
@@ -141,14 +158,8 @@
         <label class="form-label">Teléfono</label>
         <input type="tel" id="ml-tel" placeholder="Ej: 351-4523890">
         <div class="form-row">
-          <div>
-            <label class="form-label">Abre</label>
-            <input type="time" id="ml-abre" value="08:00">
-          </div>
-          <div>
-            <label class="form-label">Cierra</label>
-            <input type="time" id="ml-cierra" value="14:00">
-          </div>
+          <div><label class="form-label">Abre</label><input type="time" id="ml-abre" value="08:00"></div>
+          <div><label class="form-label">Cierra</label><input type="time" id="ml-cierra" value="14:00"></div>
         </div>
         <label class="form-label">Cajones adeudados actuales</label>
         <input type="number" id="ml-deuda" value="0" min="0">
